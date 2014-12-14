@@ -1,3 +1,7 @@
+####This is the original README file that accompanies the first assignment for 
+####Reproducible Research. It contains the instructions for the assignment as 
+####well as brief descriptions of the experiment and resulting data.
+
 ## Introduction
 
 It is now possible to collect a large amount of data about personal

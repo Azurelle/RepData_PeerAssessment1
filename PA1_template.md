@@ -1,9 +1,4 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document: 
-    keep_md: true
---- 
+# Reproducible Research: Peer Assessment 1
 --------------------------------------------------------------------------------  
 
 ## Loading and preprocessing the data  
@@ -25,8 +20,8 @@ was transformed into a new factor *todIntStart*, which was added to the datafram
 This variable displays the hour separated from the minutes by a colon. Thus,  
 for example, *55* becomes *0:55* and *2134* becomes *21:34*.
   
-```{r setoptions, echo=TRUE}
 
+```r
 library(plyr)
 library(lattice)
 
@@ -54,49 +49,104 @@ colnames(df)[4] <- "todIntStart"
 ```
 ##### A brief description of the data
 
-There are `r nrow(df)` five minute collection intervals in this dataset, with 
+There are 17568 five minute collection intervals in this dataset, with 
 the first interval   
 starting at 
-`r df[df$date==min(df$date) & df$interval==min(df[df$date==min(df$date),3]),4]` 
-hours on `r min(df$date)` and the last interval starting at 
-`r df[df$date==max(df$date) & df$interval==max(df[df$date==max(df$date),3]),4]` 
+0:00 
+hours on 2012-10-01 and the last interval starting at 
+23:55 
 hours   
-on `r max(df$date)`.
+on 2012-11-30.
 
-```{r }
+
+```r
 # number of rows in df = number of collection intervals:
 nrow(df) 
+```
+
+```
+## [1] 17568
+```
+
+```r
 # first interval starting time:
 df[df$date==min(df$date) & df$interval==min(df[df$date==min(df$date),3]),4]
+```
+
+```
+## [1] 0:00
+## 288 Levels: 0:00 0:05 0:10 0:15 0:20 0:25 0:30 0:35 0:40 0:45 0:50 ... 9:55
+```
+
+```r
 # data collection start date:
 min(df$date)
+```
+
+```
+## [1] "2012-10-01"
+```
+
+```r
 # last interval starting time:
 df[df$date==max(df$date) & df$interval==max(df[df$date==max(df$date),3]),4]
+```
+
+```
+## [1] 23:55
+## 288 Levels: 0:00 0:05 0:10 0:15 0:20 0:25 0:30 0:35 0:40 0:45 0:50 ... 9:55
+```
+
+```r
 # data collection end date:
 max(df$date)
 ```
 
+```
+## [1] "2012-11-30"
+```
+
 The measurements were made on a single subject, with 
-`r nrow(df)-sum(is.na(df$steps))` observations recorded 
+15264 observations recorded 
 and 
-`r sum(is.na(df$steps))` observations missing. These are coded as *NA*. For 
-each day, there are `r nlevels(unique(as.factor(df$interval)))` interval 
+2304 observations missing. These are coded as *NA*. For 
+each day, there are 288 interval 
 measurements,   
 12 per hour. 
-```{r}
+
+```r
 # number of observations recorded:
 nrow(df)-sum(is.na(df$steps))
+```
+
+```
+## [1] 15264
+```
+
+```r
 # number of observations missing:
 sum(is.na(df$steps))
+```
+
+```
+## [1] 2304
+```
+
+```r
 # number of intervals in a day:
 nlevels(unique(as.factor(df$interval)))
-```  
+```
+
+```
+## [1] 288
+```
 
 ## What is the mean total number of steps taken per day?    
 
 Omitting missing values, a histogram of the total number of steps taken each day     
 is shown in Figure 1:    
-```{r}
+
+```r
 histdata <- ddply(df, .(date), 
     summarize 
     , totalsteps=sum(steps,na.rm=TRUE) 
@@ -105,24 +155,39 @@ histdata <- ddply(df, .(date),
 
 hist(histdata$totalsteps, breaks=20, xlab="Total number of steps", 
     ylab="Frequency", main="Figure 1: Total number of steps taken per day")  
-```  
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
 
 The mean total number of steps taken per day is
-`r  formatC(round(mean(histdata$totalsteps),1),digits=1,format="f")` 
+9354.2 
 and the median total number of steps  
 per day is
-`r formatC(round(median(histdata$totalsteps),1),digits=1,format="f")`.  
+10395.0.  
 
-```{r}
+
+```r
 meanWithMissing <- mean(histdata$totalsteps)
 meanWithMissing
+```
+
+```
+## [1] 9354.23
+```
+
+```r
 medianWithMissing <- median(histdata$totalsteps)
 medianWithMissing
+```
+
+```
+## [1] 10395
 ```
   
 ## What is the average daily activity pattern? 
 
-```{r}
+
+```r
 # create new dataframe with average number of steps for each interval
 plotdata <- ddply(df, .(interval), summarize, meansteps=mean(steps,na.rm=TRUE))
 ```
@@ -131,19 +196,29 @@ plotdata <- ddply(df, .(interval), summarize, meansteps=mean(steps,na.rm=TRUE))
   days (with *interval*   
   as the temporal variable) is shown in Figure 2. The 
   maximum, at interval number 
-  `r plotdata[plotdata$meansteps==max(plotdata$meansteps),1]`, is easily   
+  835, is easily   
   detected.  This is the five minute interval that, on average, 
   across all the days in the dataset,   
   contains the maximum mean number of steps, 
-  `r round(plotdata[plotdata$meansteps==max(plotdata$meansteps),2],1)`.
-```{r}
+  206.2.
 
+```r
 xyplot(plotdata$meansteps ~ plotdata$interval, type = "l", xlab="Interval", 
     ylab="Mean number of steps", 
     main = "Figure 2: Average number of steps per interval, averaged across 
     all days" )
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
+
+```r
 # interval corresponding to peak in graph:
 plotdata[plotdata$meansteps==max(plotdata$meansteps),]
+```
+
+```
+##     interval meansteps
+## 104      835  206.1698
 ```
 
 ## Imputing missing values  
@@ -154,12 +229,19 @@ the mean number of steps per interval per day. So, for example, if our subject
 walks to the gym every Monday at 6:00 a.m., goes to class at 7:30 a.m on Fridays,   
 works at home on Wednesdays, etc., the average number of steps in the time   
 period for each day should be a reasonable approximation of the values that are   
-missing. There are `r sum(is.na(df$steps))` missing values to be imputed.
+missing. There are 2304 missing values to be imputed.
 
-```{r}
+
+```r
 # number of missing values to be imputed:
 sum(is.na(df$steps))  
+```
 
+```
+## [1] 2304
+```
+
+```r
 # add day of week column to dataframe and calculate average for each 
 # day/interval pair
 dayOfWeek <- weekdays(df$date)
@@ -180,22 +262,37 @@ for(i in 1:nrow(df2)) {
 ```
 A histogram of the total number of steps taken each day is shown in Figure 3.  
 
-```{r}
+
+```r
 histdata2 <- ddply(df2, .(date), summarize, totalsteps=sum(steps,na.rm=TRUE))
 hist(histdata2$totalsteps, breaks=20, xlab="Interval", 
     main="Figure 3: Total number of steps taken per day with imputed values 
     included")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
   
 The mean total number of steps taken per day for the estimated data is 
-`r formatC(round(mean(histdata2$totalsteps),1),digits=1,format="f")`   
+10821.2   
 and the median total number of steps per day is 
-`r formatC(round(median(histdata2$totalsteps),1),digits=1,format="f")`.
-```{r}
+11015.0.
+
+```r
 meanWithImpute <- mean(histdata2$totalsteps)
 meanWithImpute
+```
+
+```
+## [1] 10821.21
+```
+
+```r
 medianWithImpute <-median(histdata2$totalsteps)
 medianWithImpute
+```
+
+```
+## [1] 11015
 ```
 
 If these numbers are compared to the original mean and median calculated on the     
@@ -209,7 +306,8 @@ depending upon the context and how the results are to be used.  Missing values,
 in this   
 case, cause the mean and median to be underestimated.
 
-```{r}
+
+```r
 matrix(c(meanWithMissing,meanWithImpute,meanWithImpute-meanWithMissing,
          round(100*(meanWithImpute-meanWithMissing)/meanWithMissing,1),
          medianWithMissing,medianWithImpute,medianWithImpute-medianWithMissing,
@@ -218,6 +316,12 @@ matrix(c(meanWithMissing,meanWithImpute,meanWithImpute-meanWithMissing,
     ,nrow = 2, ncol = 4, byrow = TRUE,
     dimnames = list(c("Mean", "Median"), 
     c("With Missing", "With Imputed", "Difference", "% Difference")))
+```
+
+```
+##        With Missing With Imputed Difference % Difference
+## Mean        9354.23     10821.21    1466.98         15.7
+## Median     10395.00     11015.00     620.00          6.0
 ```
 
 The effect of imputing missing values has even more of an effect on the daily    
@@ -231,7 +335,8 @@ not be more accurate than assuming no activity when values are missing. Either
 way, imputing missing values makes a big difference to the interpretation of 
 the data.
   
-```{r}
+
+```r
 totals1 <- cbind(histdata[,1:2],c("Before"))
 colnames(totals1)<-c("date","totalSteps","When")
 totals2 <- cbind(histdata2[,1:2],c("After"))
@@ -243,6 +348,8 @@ xyplot(totals$totalSteps ~ totals$date, type = "l", groups=totals$When,
     main="Figure 4: Imputed data (pink) overlayed with missing data (blue)")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-11-1.png) 
+
 ## Are there differences in activity patterns between weekdays and weekends?  
 
 A two level factor variable *weekPart* was created to indicate whether the    
@@ -252,7 +359,8 @@ the week, and overall, fewer steps are taken.  However, the largest peaks do
 occur at the same time each day, indicating some continuity in routine   
 regardless of day of the week.  
 
-```{r}
+
+```r
 df2 <- cbind(df2,c("weekday"))
 colnames(df2)[7]<-"weekPart"
 
@@ -267,3 +375,5 @@ xyplot(plotdata2$meansteps ~ plotdata2$interval | plotdata2$weekPart, type = "l"
     main="Figure 5: Mean number of steps in each time interval for week days 
     and weekend days")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-12-1.png) 
